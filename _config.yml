@@ -1,0 +1,24 @@
+url: "http://scocoyash.github.io"
+baseurl: ""
+title: Yash's Blog
+name: "Yash's Tech Blog"
+author: Yash Jain
+twitter_username: scocoyash
+description: Software and Deep Learning enthusiast. Logging my learning here :)
+profile_url: "http://scocoyash.github.io"
+
+# Build settings
+timezone: "Asia/Kolkata"
+markdown: kramdown
+highlighter: rouge
+excerpt_separator: <!--more-->
+plugins:
+  - jekyll-feed
+  - jekyll-archives
+exclude:
+  - Gemfile
+  - Gemfile.lock
+kramdown:
+  input: GFM
+  auto_ids: true
+  syntax_highlighter: rouge
