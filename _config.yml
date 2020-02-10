@@ -7,6 +7,11 @@ twitter_username: scocoyash
 description: Software and Deep Learning enthusiast. Logging my learning here :)
 profile_url: "http://scocoyash.github.io"
 
+permalink: /:title/
+
+# Fill in your Google Analytics ID to track your website using GA
+#google_analytics: ""
+
 # Build settings
 timezone: "Asia/Kolkata"
 markdown: kramdown
