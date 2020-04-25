@@ -131,18 +131,17 @@
  * Site footer
  */
 .site-footer {
+  position: relative;
   right: 0;
   bottom: 0;
   left: 0;
-  padding: 1rem;
   text-align: center;
-  font-size: $small-font-size;
   color: $grey-color;
   clear: both;
-  margin-bottom: 30px;
 
   a {
     color: $grey-color;
+    margin: 0 4px;
   }
   p {
     margin: 5px auto;
@@ -217,7 +216,15 @@
  */
 
 .other-pages {
-    margin-top: $spacing-unit * 0.5;
+    margin-top: 0;
+}
+
+.about-page {
+  margin-top: 8px;
+}
+
+.about-page .about{
+  padding: 8px 8px 8px 8px;
 }
 
 div.qa {
