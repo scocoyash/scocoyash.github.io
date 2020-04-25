@@ -1,6 +1,6 @@
 <div style="clear: both;"/>
 <footer class="site-footer">
-    &copy; 2020 | Yash Jain | <a href="{{ '/tags/' | relative_url }}">Tags</a>
+    &copy; <span id="year"></span> | <a href="{{ '/' | relative_url }}">Yash Jain</a> | <a href="{{ '/tags/' | relative_url }}">Tags</a>
 
     <p>
         <a href="https://github.com/scocoyash" target="_blank">
@@ -15,3 +15,8 @@
     </p>
     
 </footer>
+<script type="text/javascript">
+    current_date = new Date()
+    year = current_date.getFullYear()
+    document.getElementById("year").innerHTML = year;
+</script>

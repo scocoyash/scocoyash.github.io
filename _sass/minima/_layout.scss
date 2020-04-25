@@ -3,8 +3,9 @@
  */
 
 .site-header {
-  background: #222;
-  opacity: 0.8;
+  background: $background-color;
+  background-color: var(--background-color);
+  opacity: 1.0;
   min-height: $spacing-unit * 1.865;
   position: relative;
 
@@ -23,7 +24,8 @@
 .site-title {
   @include relative-font-size(1.2);
   font-weight: 400;
-  color: #ffffff; // $crimson-color;
+  color: $text-color;
+  color: var(--text-color);
   line-height: $base-line-height * $base-font-size * 2.25;
   letter-spacing: 0px;
   margin-bottom: 0;
@@ -31,11 +33,12 @@
 
   &,
   &:visited {
-    color: #ffffff; // $crimson-color-dark;
+    color: $text-color;
+    color: var(--text-color);
   }
 
   &:hover {
-    color: $crimson-color-light;
+    color: $crimson-color;
     text-decoration: none;
     cursor: pointer;
   }
@@ -44,18 +47,20 @@
 .head_title {
   @include relative-font-size(1.2);
   font-weight: 500;
-  color: #ffffff;
+  color: $text-color;
+  color: var(--text-color);
   letter-spacing: 1px;
   margin-bottom: 0;
   float: left;
 
   &,
   &:visited {
-    color: #ffffff;
+    color: $text-color;
+    color: var(--text-color);
   }
 
   &:hover {
-    color: $crimson-color-light;
+    color: $crimson-color;
     text-decoration: none;
     cursor: pointer;
   }
@@ -63,10 +68,11 @@
 
 .blink_cursor {
   display: inline-block;
+  padding-left: 2px;
   width: 6px;
   height: 1rem;
   background: #b71212;
-  border-radius: 2px;
+  border-radius: 1px;
   animation: cursor 1s infinite;
   animation-timing-function: cubic-bezier(0.6, -0.28, 0.735, 0.045);
   animation-direction: normal;
@@ -89,7 +95,7 @@
   float: right;
   text-align: right;
   line-height: $base-line-height * $base-font-size * 2.25;
-  padding-right: 10px;
+  padding-right: 16px;
 
   .nav-trigger {
       display: none;
@@ -100,7 +106,8 @@
   }
 
   .page-link {
-    color: #ffffff; // $text-color;
+    color: $text-color;
+    color: var(--text-color);
     line-height: $base-line-height;
 
     // Gaps between nav items, but not on the last one
@@ -109,7 +116,7 @@
     }
 
     &:hover {
-      color: $crimson-color-light;
+      color: $crimson-color;
       text-decoration: none;
       cursor: pointer;
     }
@@ -120,6 +127,7 @@
     top: 9px;
     right: $spacing-unit / 2;
     background-color: $background-color;
+    background-color: var(--background-color);
     border: 1px solid $grey-color-light;
     border-radius: 5px;
     text-align: right;
@@ -197,6 +205,12 @@
     margin: 0 4px;
     display: block;
     float: left;
+  }
+
+  a:hover {
+    color: $crimson-color;
+    text-decoration: none;
+    cursor: pointer;
   }
 }
 
