@@ -8,17 +8,6 @@
   opacity: 1.0;
   min-height: $spacing-unit * 1.865;
   position: relative;
-
-  /*
-  min-height: $spacing-unit * 1.75;
-  background: #222;
-  opacity: 0.8;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  display: block;
-  transition: top 0.3s;
-  */
 }
 
 .site-title {
@@ -115,6 +104,12 @@
       margin-right: 20px;
     }
 
+    &,
+    &:visited {
+      color: $text-color;
+      color: var(--text-color);
+    }
+
     &:hover {
       color: $crimson-color;
       text-decoration: none;
@@ -122,66 +117,38 @@
     }
   }
 
-  @include media-query($on-palm) {
-    position: absolute;
-    top: 9px;
-    right: $spacing-unit / 2;
-    background-color: $background-color;
-    background-color: var(--background-color);
-    border: 1px solid $grey-color-light;
-    border-radius: 5px;
-    text-align: right;
-
-    label[for="nav-trigger"] {
-      display: block;
-      float: right;
-      width: 36px;
-      height: 36px;
-      z-index: 2;
-      cursor: pointer;
-    }
-
-    .menu-icon {
-      display: block;
-      float: right;
-      width: 36px;
-      height: 26px;
-      line-height: 0;
-      padding-top: 10px;
-      text-align: center;
-
-      > svg path {
-        fill: $grey-color-dark;
-      }
-    }
-
-    input ~ .trigger {
-      clear: both;
-      display: none;
-    }
-
-    input:checked ~ .trigger {
-      display: block;
-      padding-bottom: 5px;
-    }
-
+  @media only screen and (max-width: 400px) {
+    line-height: $base-line-height * $base-font-size * 2.25;
+    padding-right: 6px;
+    
     .page-link {
-      display: block;
-      padding: 5px 10px;
-
+      color: $text-color;
+      color: var(--text-color);
+      line-height: $base-line-height;
+  
+      // Gaps between nav items, but not on the last one
       &:not(:last-child) {
-        margin-right: 0;
+        margin-right: 10px;
       }
-      margin-left: 20px;
+      
+      &,
+      &:visited {
+        color: $text-color;
+        color: var(--text-color);
+      }
+
+      &:focus, &:active {
+        color: $crimson-color;
+        text-decoration: none;
+        cursor: auto;
+      }
     }
   }
 }
 
-
-
 /**
  * Site footer
- */
+**/
 .site-footer {
   position: relative;
   right: 0;
@@ -199,14 +166,6 @@
     margin: 5px auto;
     width: 200px;
   }
-  img {
-    width: 26px;
-    height: 26px;
-    margin: 0 4px;
-    display: block;
-    float: left;
-  }
-
   a:hover {
     color: $crimson-color;
     text-decoration: none;
@@ -269,10 +228,6 @@
   }
 }
 
-/**
- * FAQ
- */
-
 .other-pages {
     margin-top: 0;
 }
@@ -298,7 +253,7 @@ div.qa {
 
 /**
  * Posts
- */
+*/
 .post-header {
   margin-top: $spacing-unit * 2;
   margin-bottom: $spacing-unit;
