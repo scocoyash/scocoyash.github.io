@@ -26,21 +26,29 @@ $crimson-color-very-light:   lighten($crimson-color, 40%) !default;
 $crimson-color-dark:    #b71212;
 
 $orange-color:          #ff8f26;
+$blockquote-background: #f0f0f0;
+$blockquote-text:       #777777;
 
 @media(prefers-color-scheme: dark) {
   $dark-background:   #000;
-  $background-color: #121212;
+  $background-color:  #121212;
   $text-color:        #828282;  
+  $blockquote-background: #1a1a1a;
+  $blockquote-text:       #828282;
 }
 
 :root {
   --text-color:       #121212;
   --background-color: #fdfdfd;
+  --blockquote-background: #f0f0f0;
+  --blockquote-text:       #777777;
 }
 
 [data-theme="dark"] {
   --text-color:        #828282;  
   --background-color:  #121212;
+  --blockquote-background: #1a1a1a;
+  --blockquote-text:       #828282;
 }
 
 
