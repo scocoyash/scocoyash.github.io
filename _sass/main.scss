@@ -28,18 +28,19 @@ $crimson-color-dark:    #b71212;
 $orange-color:          #ff8f26;
 
 @media(prefers-color-scheme: dark) {
-  $dark-background: #000;
-  $background-color : #121212;
-  $text-color:#fafafa;  
+  $dark-background:   #000;
+  $background-color: #121212;
+  $text-color:        #828282;  
 }
+
 :root {
-  --text-color:       #111;
+  --text-color:       #121212;
   --background-color: #fdfdfd;
 }
 
 [data-theme="dark"] {
-  --background-color : #121212;
-  --text-color:#fafafa;  
+  --text-color:        #828282;  
+  --background-color:  #121212;
 }
 
 
