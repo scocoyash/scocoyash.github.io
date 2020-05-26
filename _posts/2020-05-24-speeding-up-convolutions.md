@@ -114,7 +114,8 @@ The above laying out of the image patches into a matrix is called **im2col**, fo
 
 ### Example for im2col
 Consider this normal convolution operation to be performed.
-![Naive Convolution](/assets/images/convolutions/naive-conv.png)
+
+![Naive Convolution](/assets/images/convolutions/naive-conv.svg)
 {: style="display: block;margin: 0 auto;"}
 <i><center>Fig. Naive Convolution Operation</center></i>
 
@@ -122,7 +123,7 @@ Below is the same operation implemented as a matrix multiplication.
 The right matrix is the result of im2col – it has to be constructed by copying pixels from the original image. 
 The left matrix has the conv weights, which are already stored this way in memory.
 
-![Im2Col Operation](/assets/images/convolutions/im2col.png)
+![Im2Col Operation](/assets/images/convolutions/im2col.svg)
 {: style="display: block;margin: 0 auto;"}
 <i><center>Fig. im2col Operation</center></i>
 
