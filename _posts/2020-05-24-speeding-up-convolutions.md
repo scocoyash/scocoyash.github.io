@@ -7,13 +7,13 @@ tags: learnings convolution deep-learning
 ---
 
 > Is convolution in the real world, ever performed, in the way we were taught in various courses ?
-  Ehh, I don't think so. Let's explore how to optimize this heavy-computational operation using basic algorithmic cleverness and parallelization.  
+  Nopes, I don't think so. Let's explore one of the ways to optimize this heavy-computational operation using basic algorithmic cleverness.  
 
 <!--more-->
 
-On my normal laptop, i3 - 3<sup>rd</sup> Gen, I can infer most common CNN models using Tensorflow, Tensorflow Lite or Pytorch within 10-100 milliseconds. Even on latest flagship mobile chipsets such as Qualcomm's Snapdragon 865, using Tensorflow Lite, I am able to execute Mobilents (V1, V2) in almost (at max) 30ms. <br/>
+On my normal laptop, i3 - 3<sup>rd</sup> Gen, I can infer most common CNN models using Tensorflow, Tensorflow Lite or Pytorch within 10-100 milliseconds. Even on latest flagship mobile chipsets such as Qualcomm's Snapdragon 865, using Tensorflow Lite, I am able to execute Mobilenets (V1, V2) in almost (at max) 30ms. <br/>
 
-But you will see, when you implement a normal convolution operation, using C/C++, it takes around 1 second for a single layer to execute. So, how are these libraries able to optimize the convolution operation by a factor of around 100x ? It's really interesting to see human-cleverness at play while designing algorithms as well as exploitation of low-level architecture. <br/>
+But you will see, when you [implement](https://github.com/scocoyash/Convolution-To-Gemm) a normal convolution operation, using C/C++, it takes around 1 second for a single layer to execute. So, how are these libraries able to optimize the convolution operation by a factor of around 100x ? It's really interesting to see human-cleverness at play while designing algorithms as well as exploitation of low-level architecture. <br/>
 
 Most of what I have read and written in this article is from a paper titled [Anatomy of High-Performance Many-Threaded Matrix Multiplication](https://www.cs.utexas.edu/users/flame/pubs/blis3_ipdps14.pdf) and the links mentioned in references. 
 
@@ -26,7 +26,7 @@ Most of what I have read and written in this article is from a paper titled [Ana
 
 ## Basic Terminologies
 
-### FLOP/S (floating point operations per second)
+### FLOP/s (floating point operations per second)
 
 FLOPS are a measure of performance used for comparing the peak theoretical performance of a core, microprocessor, or system using floating point operations. This unit is often used in the field of high-performance computing (e.g., supercomputers) in order to evaluate the peak theoretical performance of various scientific workloads.
 
@@ -57,16 +57,19 @@ Common memory layout in Deep-Learning is **row-major**.<br/>
 
 In case of 3D or higher dimensions, Image data format additionally refers to the representation of batches of images. In case of TensorFlow, it supports **NHWC** (TensorFlow default) and **NCHW** (cuDNN default). N refers to the number of images in a batch, H refers to the number of pixels in the vertical dimension, W refers to the number of pixels in the horizontal dimension, and C refers to the channels.
 
-![Different memory layouts](/assets/images/convolutions/memory-layouts.png)
+![Different memory layouts](/assets/images/convolutions/data-layouts.svg)
 {: style="display: block;margin: 0 auto;"}
-<i><center>Fig. Different memory layouts</center></i>
+<i><center>Fig. Different Physical Data Layouts</center></i>
 
-For this article, I am going to stick to NCHW layout as it is mostly used for GPU's.
+For this article, I am going to stick to NCHW layout as it is most commonly used in GPU's.
 
 ## Naive Convolution
 
 Suppose we have an image with height H, width W and channels C. 
 We convolve this with **M** filters of size **K x K** each featuring the same no. of channels C. 
+
+For examples in this article, I have taken a matrix of size *512 x 512 x 512* (H x W x C) and 
+a filter of size *3 x 3 x 512*  keeping the channels same.
 
 Let's have a look at naive convolution algorithm first :
 
@@ -92,14 +95,13 @@ for filter in 0..num_filters
 On my PC, executing this algorithm gave the following result:
 
 ```
-Elapsed time: 1192.744019 milliseconds; GFLOps=0.018544
+Elapsed time: 2475.364990 milliseconds GFlops: 0.108443
 ```
 
 Eww! 6 nested Loops!!<br/>
-Wooping **1.2 seconds** to run a basic convolution operation. It's terribly slow. We can execute a whole CNN network using Tensorflow in less than 100 milliseconds and here we are, just performing a single convolution operation taking ~100x more time.
+Wooping **2.4 seconds** to run a basic convolution operation. It's terribly slow. We can execute a whole CNN network using Tensorflow in less than 100 milliseconds and here we are, just performing a single convolution operation taking ~100x more time.
 
 Optimizing such a complex nested for loop is non-trivial. If you have tried optimizing matrix multiplication, you know that there is a lot of tricks involved in it.
-
 ## Convolution as GEMM
 
 As you saw above, a normal convolution operation is too tricky to be performed if you have to match the performances that advanced libraries such as BLAS provide. Maybe we can visualize this problem as a different operation altogether. How about a matrix multiplication ?
@@ -129,8 +131,10 @@ The left matrix has the conv weights, which are already stored this way in memor
 
 The time taken by this conversion from image to matrix using im2col operation as well as the memory used has to be justified by providing some serious speedups in order to provide performance improvements.
 
-
 ## Gemm and Optimizations
+
+Note: All the matrix multiplications are performed on arrays of size 512 x 512 to match with the above
+convolution operation. All the below implementations are at github repo [here](https://github.com/scocoyash/Convolution-To-Gemm).
 
 ### Naive Gemm
 From our basic linear algebra textbooks, we see how Matrix Multiplication is performed.
@@ -151,12 +155,12 @@ are performed M * N * K times. So, the number of **FLOps** for this GEMM is 2 * 
 
 [Note: **FLOps** stands for Floating Point Operations whereas **FLOP/s** stands for Floating Point Operations per second]
 
-After executing this code, these 3 nested loops, gave the following result:
+After executing this code for 512x512 arrays, these 3 nested loops, gave the following result:
 ```python
-Elapsed time: 900.421997 milliseconds; GFLOps=0.174681
+Naive Elapsed time: 94.907997 milliseconds GFlops: 2.828376
 ```
 
-Not Bad! Approx **~10x** improvements by just using naive-gemm on the same size of inputs but in a matrix form. Not to forget, we have to add time taken by im2col too. 
+Not Bad! More than **~20x** improvements by just using naive-gemm on the same size of inputs but in a matrix form. Not to forget, we have to add time taken by im2col too. 
 GFLOps has improved but still we are not utilizing all the processing capacity available.
 
 ### Naive Gemm + Caching
@@ -212,8 +216,12 @@ for i in 0..M:
 Using this, we are able to notice improvements and achieve considerable speedup over naive-gemm. Here are the results: 
 
 ```python
-Elapsed time: 785.825012 milliseconds; GFLOps = 0.200154
+Caching Elapsed time: 52.035999 milliseconds GFlops: 5.158649
 ```
+
+Impressive! We almost halved the time by utilizing or knowledge of memory architectures and caches.
+Also, the increase in GFlops show us that we are optimally utilizing the processing power now.
+Now, we move on to a different approach to deal very large matrices as in the case of deep learning.
 
 ### Tiling
 Our memory access pattern is still inefficient. We access matrix B many times and multiply the values with different parts of matrix A. 
@@ -231,27 +239,106 @@ Matrix A: size M * K
 Matrix B: size K * N
 Output Matrix C: size M * N
 '''
-for xo in 0..N/16:
-    for yo in 0..M/6:
-        for yi in 6:
-            for xi in 0..16:
-                for k in 0..K:
-                    C(..) += A(..)*B(..)
+block_size = 32
+for i in 0..N increment by block_size
+    imin = min(i + block_size, N)
+    for j in 0..M increment by block_size
+        jmin = min(j + block_size, M)
+        for k in 0..K increment by block_size
+            kmin = min(k + block_size, K)
+            for x in 0..imin
+                for y in 0..jmin
+                    for z in 0..kmin
+                        C[x * M + y] +=  A[x * M + z] * B[z * M  + y]
 ```
 
-Well Well! Yeah!! We did Further timing improvements in GEMM using Tiling. Here are the results :
+You might be shocked to see the results with this:
 
 ```python
-Elapsed time: 719.728012 milliseconds; GFLOps = 0.218536
+Tiling Elapsed time: 272.923004 milliseconds GFlops: 0.983557
 ```
 
-### Some more GEMM Optimizations
-You can try out Threading and Vectorization. Obviously they will outperform the above methods.
+It worsened the timings of normal gemm by a fraction of **~3x**. But according to our intuition, it should improve right? What happened here ?
 
-I haven't completed yet that. Will update as soon as i zip it on my github.
+As from experiments, it is found that tiling works better when the arrays are of **size > 1024** elements.
+Since our arrays are of size with 512 elements, it degraded performance.
 
-Till then, keep learning and stay safe!
+### Tiling + Caching
 
+Just like we utilized caches efficiently in our previous caching algorithm, from our intuition, we might as well utilize it in tiling too.
+
+Here's the spseudo code for it:
+
+```python
+'''
+Matrix A: size M * K
+Matrix B: size K * N
+Output Matrix C: size M * N
+'''
+block_size = 32
+for i in 0..N increment by block_size
+    imin = min(i + block_size, N)
+    for k in 0..K increment by block_size
+        kmin = min(k + block_size, K)
+        for j in 0..M increment by block_size
+            jmin = min(j + block_size, M)
+            for x in 0..imin
+                for z in 0..kmin
+                    for y in 0..jmin
+                        C[x * M + y] +=  A[x * M + z] * B[z * M  + y]
+```
+
+Tadada -
+
+```python
+Tiling + Caching Elapsed time: 63.615002 milliseconds GFlops: 4.219688
+```
+It was due to caching our performance was degrading. Tiling indeed gives better performance if implemented
+correctly utilizing caches properly.
+Even so, when you experiment with larger array sizes such as 1024, it outperforms above caching too.
+We haven't introduced one more **Bhramastra** of high performance computing yet. Let's utilize that too
+in nexr section.
+
+### Parallelization
+If you have reached this part of the article, you might see, whatever we have done till now to increase the processing power utilization, we did not mention what cores to use and how many threads to spawn.
+We were just asking the processor to execute one instruction at a time.
+But since now-a-days we have multiple cores in CPU, we might well utilize those too for our performance improvements.
+
+Just defining parallel computing here:
+> In the simplest sense, **parallel computing** is the simultaneous use of multiple compute resources to solve a computational problem:
+- A problem is broken into discrete parts that can be solved concurrently
+- Each part is further broken down to a series of instructions
+- Instructions from each part execute simultaneously on different processors
+- An overall control/coordination mechanism is employed
+
+You might want to read more on parallel computing from the link in references.
+
+The easiest way to utilize the power of cores is via spawning threads on the parts of the code that operate on different unrelated data.
+For C++, Openmp is the most common used library with which I have experimented and it yielded the following results:
+
+```
+Caching Elapsed time: 35.613998 milliseconds GFlops: 7.537358
+
+Tiling Elapsed time: 163.929993 milliseconds GFlops: 1.637501
+
+Tiling + Caching Elapsed time: 39.122002 milliseconds GFlops: 6.861496
+```
+These were the best timings we were able to achieve by parallelizing the above algorithms using Openmp.
+You can see that performance improvements of about **~90x** compared to normal convolution operation
+and further **~3x** improvements from naive gemm. 
+
+We still are not able to utilize the whole processing power which is evident from the GFlops here. At max, we achieved a GFlops of **7.5** which is one-fourth of computing capability of my PC with GFlops of **28**.
+
+## Explore
+Also, you can try out **Vectorization** using AVX and SSE instruction sets, which is in common usage in most of the deep learning libraries. I won't be covering it here because it's too deep for a topic to explore as of now.
+
+Having learnt how convolution is usually performed underneath most of the systems was too a roller-coaster ride for me too. The methods discussed above are just few algorithms how Convolution is optimized.
+Others being Fast-Fourier Transform, Winograds algorithm for 3 x 3 filters, etc.
+Again, will not be covering those here but maybe sometime in future. 
+
+Till then, Stay safe and keep learning!
+
+---
 ## References
 
 - [Memory Layouts by Eli](https://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays)
@@ -260,7 +347,8 @@ Till then, keep learning and stay safe!
 - [Praising Moon](https://praisethemoon.org/demystifying-the-math-and-implementation-of-convolutions-part-iii/)
 - [UC Texas Paper](https://www.cs.utexas.edu/~flame/pubs/GotoTOMS_revision.pdf)
 - [Pete Warden's Blog](https://petewarden.com/2015/04/20/why-gemm-is-at-the-heart-of-deep-learning/)
+- [Parallel Computing](https://computing.llnl.gov/tutorials/parallel_comp/)
 
 ---
 
-<i><center>For those who haven't met me before, I am Yash, writing this article with <span style="color:red;"> &#10084; </span> from India.</center></i>
+<i><center>For those who haven't met me before, I am <b>Yash</b>, writing this article with <span style="color:red;"> &#10084; </span> from India.</center></i>
