@@ -267,7 +267,7 @@ Since our arrays are of size with 512 elements, it degraded performance.
 
 Just like we utilized caches efficiently in our previous caching algorithm, from our intuition, we might as well utilize it in tiling too.
 
-Here's the spseudo code for it:
+Here's the pseudo code for it:
 
 ```python
 '''
@@ -316,7 +316,7 @@ You might want to read more on parallel computing from the link in references.
 The easiest way to utilize the power of cores is via spawning threads on the parts of the code that operate on different unrelated data.
 For C++, Openmp is the most common used library with which I have experimented and it yielded the following results:
 
-```
+```python
 Caching Elapsed time: 35.613998 milliseconds GFlops: 7.537358
 
 Tiling Elapsed time: 163.929993 milliseconds GFlops: 1.637501
